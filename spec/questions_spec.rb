@@ -112,7 +112,7 @@ describe 'the Friday test :)' do
   end
 
   it 'get_elements_until_greater_than_five' do
-    n = get_elements_until_greater_than_five [1, 3, 5, 4, 1, 2, 6, 2, 1, 3, 7]
+    n = get_elements_until_greater_than_five [1, 3, 5, 4, 1, 2, 6, 6, 1, 3, 7]
     expect(n).to eq [1, 3, 5, 4, 1, 2]
   end
 
