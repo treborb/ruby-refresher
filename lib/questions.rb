@@ -21,7 +21,7 @@ end
 # don't reverse the array, but reverse every word inside it. e.g.
 # ['dog', 'monkey'] becomes ['god', 'yeknom']
 def reverse_every_element_in_array(array)
-  array.each { |x| x.reverse! }
+  array.each(&:reverse!)
 end
 
 # given an array of student names, like ['Bob', 'Dave', 'Clive']
@@ -35,8 +35,8 @@ end
 # discard the first 3 elements of an array,
 # e.g. [1, 2, 3, 4, 5, 6] becomes [4, 5, 6]
 def all_elements_except_first_3(array)
-    array.shift(3)
-    array
+  array.shift(3)
+  array
 end
 
 # add an element to the beginning of an array
@@ -47,7 +47,7 @@ end
 # sort an array of words by their last letter, e.g.
 # ['sky', 'puma', 'maker'] becomes ['puma', 'maker', 'sky']
 def array_sort_by_last_letter_of_word(array)
-  array.sort { |x,y| x.reverse <=> y.reverse }
+  array.sort_by(&:reverse)
 end
 
 # cut strings in half, and return the first half, e.g.
@@ -193,24 +193,29 @@ end
 # where 'special character' means anything apart from the letters
 # a-z (uppercase and lower) or numbers
 def check_a_string_for_special_characters(string)
+  !string.match(/\W/).nil?
 end
 
 # get the upper limit of a range. e.g. for the range 1..20, you
 # should return 20
 def get_upper_limit_of(range)
+  range.max
 end
 
 # should return true for a 3 dot range like 1...20, false for a
 # normal 2 dot range
 def is_a_3_dot_range?(range)
+  range.size != range.last
 end
 
 # get the square root of a number
 def square_root_of(number)
+  Math.sqrt(number)
 end
 
 # count the number of words in a file
 def word_count_a_file(file_path)
+  File.read(file_path).scan(/\S+/).length
 end
 
 # --- tougher ones ---
@@ -219,12 +224,15 @@ end
 # called call_method_from_string('foobar')
 # the method foobar should be invoked
 def call_method_from_string(str_method)
+  send(str_method)
 end
 
 # return true if the date is a uk bank holiday for 2014
 # the list of bank holidays is here:
 # https://www.gov.uk/bank-holidays
 def is_a_2014_bank_holiday?(date)
+  bh = %w(01/01 18/04 21/04 05/05/ 26/05 25/08 25/12 26/12)
+  bh.include?(date.strftime("%d/%m"))
 end
 
 # given your birthday this year, this method tells you
@@ -232,6 +240,8 @@ end
 # e.g. january 1st, will next be a friday in 2016
 # return the day as a capitalized string like 'Friday'
 def your_birthday_is_on_a_friday_in_the_year(birthday)
+  birthday = birthday.to_date.next_year until birthday.friday?
+  birthday.year
 end
 
 # in a file, total the number of times words of different lengths
@@ -240,12 +250,19 @@ end
 # and 1 that is 4 letters long. Return it as a hash in the format
 # word_length => count, e.g. {2 => 1, 3 => 5, 4 => 1}
 def count_words_of_each_length_in_a_file(file_path)
+  arr = File.read(file_path).gsub(/[^A-Za-z0-9\s]/, "").split(" ")
+  arr.each_with_object(Hash.new(0)) { |str, hash| hash[str.length] += 1; }
 end
 
 # implement fizzbuzz without modulo, i.e. the % method
 # go from 1 to 100
 # (there's no RSpec test for this one)
 def fizzbuzz_without_modulo
+  (1..100).each do |i|
+    values = [15.0, 5.0, 3.0, 1.0]
+    outputs = { 15.0 => "fizzbuzz", 3.0 => "fizz", 5.0 => "buzz", 1.0 => i }
+    puts outputs[values.detect { |el| !(i / el).to_s.match(/\.0$/).nil? }]
+  end
 end
 
 # print the lyrics of the song 99 bottles of beer on the wall
@@ -255,4 +272,11 @@ end
 # at the end.
 # (there's no RSpec test for this one)
 def ninety_nine_bottles_of_beer
+  bot = ->(n) { n == 1 ? "#{n} bottle" : n == 0 ? "No more bottles" : "#{n} bottles" }
+  99.downto 1 do |n|
+    puts "#{bot[n]} of beer on the wall,\n#{bot[n]} of beer."
+    puts "Take one down and pass it around,\n#{bot[n - 1]} of beer on the wall.\n\n"
+  end
+  puts "No more bottles of beer on the wall,\nNo more bottles of beer."
+  puts "Go to the store and buy some more,\n99 bottles of beer on the wall.\n\n"
 end
